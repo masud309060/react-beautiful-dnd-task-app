@@ -2,8 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {initialData} from "@/helper/constant/data";
 import {Box, Container, styled} from "@mui/material";
 import Column from "@/components/Tasks/Column";
-import {DragDropContext} from "react-beautiful-dnd";
-import {orange} from "@mui/material/colors";
+import {DragDropContext, Droppable} from "react-beautiful-dnd";
 
 
 const WrapperTasks = styled(Box)(({theme}) => ({
@@ -22,19 +21,29 @@ const Tasks = () => {
 
 
     const handleOnDragEnd = (result) => {
-        // document.body.style.color = "inherit";
-        // document.body.style.backgroundColor = "inherit";
-        // document.body.style.transition = "color 0.2s ease";
-
-        // Todo: reorder our column
         console.log("end:: ", result);
-        const {draggableId, source, destination} = result || {};
+
+        const {draggableId, source, destination, type} = result || {};
         if (!destination) return;
         if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
+        if(type === "column") {
+            const newColumnIOrder = Array.from(state.columnOrder);
+            newColumnIOrder.splice(source.index, 1);
+            newColumnIOrder.splice(destination.index, 0, draggableId);
+
+
+            const newState = {
+                ...state,
+                columnOrder: newColumnIOrder
+            }
+
+            setState(newState)
+            return;
+        }
+
         const startColumn = state.columns[source.droppableId];
         const finishColumn = state.columns[destination.droppableId];
-
         console.log({startColumn, finishColumn})
 
         if (startColumn?.id === finishColumn?.id) {
@@ -102,17 +111,21 @@ const Tasks = () => {
     return (
         <DragDropContext onDragEnd={handleOnDragEnd} onDragStart={handleOnDragStart} onDragUpdate={handleOnDragUpdate}>
             <Container maxWidth={'md'} style={{padding: "24px"}}>
-                <WrapperTasks>
-                    {state.columnOrder.map((columnId, index) => {
-                        const column = state.columns[columnId];
-                        const tasks = column.taskIds.map(taskId => state.tasks[taskId]);
+                <Droppable droppableId={"all-column"} type={"column"} direction={"horizontal"}>
+                    {(provided, snapshot) => (
+                        <WrapperTasks ref={provided.innerRef} {...provided.droppableProps}>
+                            {state.columnOrder.map((columnId, index) => {
+                                const column = state.columns[columnId];
+                                const tasks = column.taskIds.map(taskId => state.tasks[taskId]);
 
-                        const isDropDisabled = index < state.homeIndex;
-                        return (
-                            <Column key={columnId} column={column} tasks={tasks} isDropDisabled={isDropDisabled}/>
-                        )
-                    })}
-                </WrapperTasks>
+                                return (
+                                    <Column key={columnId} column={column} tasks={tasks} index={index}/>
+                                )
+                            })}
+                            {provided.placeholder}
+                        </WrapperTasks>
+                    )}
+                </Droppable>
             </Container>
         </DragDropContext>
     );
