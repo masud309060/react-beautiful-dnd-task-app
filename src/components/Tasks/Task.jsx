@@ -3,14 +3,19 @@ import {Box, styled} from "@mui/material";
 import {Draggable} from "react-beautiful-dnd";
 
 const Container = styled(Box)(({theme, isDragging, isDragDisabled}) => ({
-    border: "1px solid " + theme.palette.action.disabled,
-    borderRadius: "2px",
+    border: "4px solid " + theme.palette.action.disabled,
+    borderRadius: "50%",
     padding: "8px",
     marginBottom: "4px",
     background: isDragDisabled ? theme.palette.action.disabled : isDragging ? theme.palette.primary.main : theme.palette.background.default,
 
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    marginRight: "4px",
+    "&:focus": {
+        outline: "none",
+        borderColor: "red"
+    }
 }))
 
 const Handler = styled(Box)(({theme}) => ({

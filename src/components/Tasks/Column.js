@@ -20,7 +20,11 @@ const TaskList = styled(Box)(({theme, isDraggingOver}) => ({
     background: isDraggingOver ? theme.palette.secondary.main : theme.palette.background.default,
 
     flexGrow: 1,
-    minHeight: "120px"
+    minHeight: "120px",
+
+
+    display: "flex",
+    alignItems: "center"
 }))
 
 const Column = ({column, tasks = [], isDropDisabled=false}) => {
@@ -35,7 +39,7 @@ const Column = ({column, tasks = [], isDropDisabled=false}) => {
             <Typography variant={"h4"} sx={{p: 1}}>{column.title}</Typography>
             <Divider/>
 
-            <Droppable droppableId={column.id} isDropDisabled={isDropDisabled} type={"TASK"}>
+            <Droppable droppableId={column.id} isDropDisabled={isDropDisabled} type={"TASK"} direction={"horizontal"}>
                 {(provided, snapshot) => (
                     <TaskList isDraggingOver={snapshot.isDraggingOver} ref={provided.innerRef} {...provided.droppableProps}>
                         {tasks.map((task, i) => (
