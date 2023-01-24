@@ -25,13 +25,17 @@ const TaskList = styled(Box)(({theme, isDraggingOver}) => ({
 
 const Column = ({column, tasks = [], isDropDisabled=false}) => {
 
+    // ## isDropDisabled = can disable to move any task, where the type is same
+
+    // ## react beautiful dnd allow to move draggable item
+    // where droppable component type is equal or same.
     const allowType = column.id === "column-3" ? "done" : "active";
     return (
         <Container>
             <Typography variant={"h4"} sx={{p: 1}}>{column.title}</Typography>
             <Divider/>
 
-            <Droppable droppableId={column.id} isDropDisabled={isDropDisabled}>
+            <Droppable droppableId={column.id} isDropDisabled={isDropDisabled} type={"TASK"}>
                 {(provided, snapshot) => (
                     <TaskList isDraggingOver={snapshot.isDraggingOver} ref={provided.innerRef} {...provided.droppableProps}>
                         {tasks.map((task, i) => (
